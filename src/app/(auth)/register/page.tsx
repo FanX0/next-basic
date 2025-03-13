@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axiosInstance from "@/lib/axios/instance";
 
 const RegisterFormSchema = z.object({
-  fullname: z.string().nonempty("Fullname wajib diisi"),
-  email: z.string().email("Format email tidak valid"),
-  password: z.string().min(8, "Password minimal 8 karakter"),
+  fullname: z.string(),
+  email: z.string(),
+  password: z.string().min(8),
 });
 
 type RegisterFormData = z.infer<typeof RegisterFormSchema>;
@@ -18,9 +19,8 @@ type RegisterFormData = z.infer<typeof RegisterFormSchema>;
 const RegisterPage = () => {
   const { push } = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterFormSchema),
@@ -31,23 +31,13 @@ const RegisterPage = () => {
       setError("");
       setIsLoading(true);
 
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await axiosInstance.post("/auth/register", data);
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        setError(errorData.error || "Registrasi gagal");
-        return;
+      if (response.status === 200) {
+        push("/login");
       }
-
-      // Jika registrasi berhasil
-      push("/login");
-    } catch (error) {
-      console.error("Error during registration:", error);
-      setError("Terjadi kesalahan pada server");
+    } catch (error: any) {
+      setError(error.response?.data?.error || "Email already Exists");
     } finally {
       setIsLoading(false);
     }

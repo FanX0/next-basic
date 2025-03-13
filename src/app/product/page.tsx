@@ -1,23 +1,21 @@
 // app/product/page.tsx
 
-import { getData } from "@/services/products";
+import { getProducts } from "@/lib/axios/products/api";
 import Link from "next/link";
 
 // Komponen halaman
 const ProductPage = async () => {
   try {
     // Memanggil data produk
-    const response = await getData("http://localhost:3000/api/product");
-    console.log("Fetched products:", response);
+    const { products } = await getProducts();
 
-    // Mengakses data produk dengan struktur yang benar
-    const products = response?.products || [];
+    // Debugging
+    console.log("Fetched products:", products);
 
     if (products.length === 0) {
       console.warn("Data produk kosong atau tidak ditemukan.");
+      return <div>No products found</div>;
     }
-
-    console.log("Products:", products);
 
     return (
       <div>
