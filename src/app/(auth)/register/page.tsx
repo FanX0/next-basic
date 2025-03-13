@@ -8,9 +8,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const RegisterFormSchema = z.object({
-  fullname: z.string(),
-  email: z.string(),
-  password: z.string().min(8),
+  fullname: z.string().nonempty("Fullname wajib diisi"),
+  email: z.string().email("Format email tidak valid"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
 });
 
 type RegisterFormData = z.infer<typeof RegisterFormSchema>;
@@ -18,9 +18,9 @@ type RegisterFormData = z.infer<typeof RegisterFormSchema>;
 const RegisterPage = () => {
   const { push } = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>(""); // State untuk error
+  const [error, setError] = useState("");
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterFormSchema),
@@ -28,30 +28,27 @@ const RegisterPage = () => {
 
   const handleRegisterUser = async (data: RegisterFormData) => {
     try {
-      // Reset error setiap kali mencoba registrasi ulang
       setError("");
       setIsLoading(true);
+
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      const result = await res.json();
 
-      if (res.status === 200) {
-        setIsLoading(false);
-        // Jika registrasi berhasil, redirect ke login atau halaman lain
-        push("/login");
-      } else {
-        // Tampilkan error sesuai respons dari API, misalnya "Email sudah terdaftar"
-        setError(result.error || "Email already Exists");
-        setIsLoading(false);
+      if (!res.ok) {
+        const errorData = await res.json();
+        setError(errorData.error || "Registrasi gagal");
+        return;
       }
-    } catch (err) {
-      console.error("Terjadi kesalahan:", err);
+
+      // Jika registrasi berhasil
+      push("/login");
+    } catch (error) {
+      console.error("Error during registration:", error);
       setError("Terjadi kesalahan pada server");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -59,7 +56,6 @@ const RegisterPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="w-full max-w-md">
-        {/* Tampilkan error jika ada */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
@@ -108,12 +104,12 @@ const RegisterPage = () => {
           <button
             disabled={isLoading}
             type="submit"
-            className="bg-blue-500 text-white p-2 mt-4 "
+            className="bg-blue-500 text-white p-2 mt-4"
           >
             {isLoading ? "Loading..." : "Register User"}
           </button>
         </form>
-        <Link href="/login">login</Link>
+        <Link href="/login">Login</Link>
       </div>
     </div>
   );
