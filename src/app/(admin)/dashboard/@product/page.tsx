@@ -1,22 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import axios from "@/lib/axios"; // Import axios instance
+import { revalidateProducts } from "@/lib/axios/products/api";
 
 const AdminProductPage = () => {
   const [status, setStatus] = useState("");
 
   const revalidate = async () => {
     try {
-      const response = await axios.post("/revalidate", null, {
-        // Null untuk body kosong
-        params: {
-          tag: "products",
-          secret: "farid123",
-        },
-      });
+      const response = await revalidateProducts();
 
-      if (response.data.revalidate) {
+      if (response.revalidate) {
         setStatus("Revalidate Success");
       }
     } catch (error) {

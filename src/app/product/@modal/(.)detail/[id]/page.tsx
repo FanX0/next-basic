@@ -1,5 +1,11 @@
-import { Modal } from "@/components/core/Modal";
+// import { Modal } from "@/components/core/Modal";
 import { getData } from "@/services/products";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Modal = dynamic(() => import("@/components/core/Modal"), {
+  loading: () => <p>Loading...</p>,
+});
 
 const DetailProductPage = async (props: any) => {
   const { params } = props;
@@ -10,10 +16,12 @@ const DetailProductPage = async (props: any) => {
   return (
     <div>
       <Modal>
-        <img
+        <Image
           src={product.data.image}
           alt="product image"
           className="rounded-xl object-cover h-60 w-1/3"
+          width={500}
+          height={500}
         />
         <div>
           <p> {product.data.name}</p>

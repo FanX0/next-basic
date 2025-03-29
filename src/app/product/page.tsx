@@ -1,6 +1,7 @@
 // app/product/page.tsx
 
 import { getProducts } from "@/lib/axios/products/api";
+import Image from "next/image";
 import Link from "next/link";
 
 // Komponen halaman
@@ -27,10 +28,12 @@ const ProductPage = async () => {
               className="bg-blue-500 rounded-xl p-20"
             >
               <div className="bg-yellow-400 rounded-xl">
-                <img
+                <Image
                   src={product.image}
                   alt="product image"
                   className="rounded-xl object-cover h-96 w-full"
+                  width={500}
+                  height={500}
                 />
               </div>
               <h4 className="text-white">{product.name}</h4>

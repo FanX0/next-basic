@@ -94,6 +94,14 @@ const LoginPage = ({ searchParams }: any) => {
         <button disabled={isLoading} className="bg-blue-500">
           {isLoading ? "Loading..." : "Login User"}
         </button>
+
+        <button
+          type="button"
+          onClick={() => signI("google", { callbackUrl, redirect: false })}
+          className="pt-4"
+        >
+          Login With Google
+        </button>
       </form>
       <Link href="/register">Register</Link>
     </div>

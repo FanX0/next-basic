@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { MouseEventHandler, useRef, ReactNode } from "react";
 
-export const Modal = ({ children }: { children: ReactNode }) => {
+const Modal = ({ children }: { children: ReactNode }) => {
   const overlay = useRef(null);
   const router = useRouter();
 
@@ -24,3 +24,5 @@ export const Modal = ({ children }: { children: ReactNode }) => {
     </div>
   );
 };
+
+export default Modal;
