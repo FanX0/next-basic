@@ -1,21 +1,41 @@
-// app/product/page.tsx
+"use client";
 
-import { getProducts } from "@/lib/axios/products/api";
 import Image from "next/image";
 import Link from "next/link";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 // Komponen halaman
-const ProductPage = async () => {
+const ProductPage = () => {
   try {
     // Memanggil data produk
-    const { products } = await getProducts();
+    // const { products } = await getProducts();
+    const { data, error, isLoading } = useSWR(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/product`,
+      fetcher
+    );
 
-    // Debugging
-    console.log("Fetched products:", products);
+    // Menangani loading
+    if (isLoading) {
+      return <div className="text-center p-20">Loading...</div>;
+    }
+
+    // Menangani error
+    if (error) {
+      console.error("Failed to fetch products:", error);
+      return (
+        <div className="text-center p-20 text-red-500">
+          Failed to load products.
+        </div>
+      );
+    }
+
+    // Cek jika data kosong atau tidak sesuai
+    const products = data?.products ?? [];
 
     if (products.length === 0) {
-      console.warn("Data produk kosong atau tidak ditemukan.");
-      return <div>No products found</div>;
+      return <div className="text-center p-20">No products found.</div>;
     }
 
     return (

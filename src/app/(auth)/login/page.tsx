@@ -97,7 +97,7 @@ const LoginPage = ({ searchParams }: any) => {
 
         <button
           type="button"
-          onClick={() => signI("google", { callbackUrl, redirect: false })}
+          onClick={() => signIn("google", { callbackUrl, redirect: false })}
           className="pt-4"
         >
           Login With Google
